@@ -641,7 +641,7 @@ int32_t qmc6309_ll_control_1_osr1_get(const qmc_context_t* context, qmc6309_osr1
  * @param val		Low pass filter depth selection to be set.
  * @retval			status of implementation function interfaces, ("0" = no error)
  */
-int32_t qmc6309_ll_control_1_osr2_set(const qmc_context_t* context, qmc6309_osr1_t val);
+int32_t qmc6309_ll_control_1_osr2_set(const qmc_context_t* context, qmc6309_osr2_t val);
 
 /**
  * @brief			Get the low pass filter depth from the control 1 register.
@@ -649,7 +649,7 @@ int32_t qmc6309_ll_control_1_osr2_set(const qmc_context_t* context, qmc6309_osr1
  * @param val		Destination buffer for the low pass filter depth selection, as pointer.
  * @retval			status of implementation function interfaces, ("0" = no error)
  */
-int32_t qmc6309_ll_control_1_osr2_get(const qmc_context_t* context, qmc6309_osr1_t* val);
+int32_t qmc6309_ll_control_1_osr2_get(const qmc_context_t* context, qmc6309_osr2_t* val);
 
 /**
  * @brief			Set the set and reset mode by the control 2 register.

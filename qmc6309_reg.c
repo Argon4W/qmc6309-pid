@@ -634,7 +634,7 @@ int32_t WEAK qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val) {
 }
 
 int32_t WEAK qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng, qmc6309_out_full_t* val) {
-	qmc6309_status_1_t status_1 = 0;
+	qmc6309_status_1_t status_1 = {0};
 
 	// Check if the data output is ready to read and the data overflow status.
 	FAIL_FAST(qmc6309_raw_status_1_get(context, &status_1));
