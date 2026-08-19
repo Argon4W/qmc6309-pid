@@ -301,7 +301,7 @@ int32_t WEAK qmc6309_ll_status_1_nvm_load_done_get(const qmc_context_t* context,
 	// Get the full register data.
 	FAIL_FAST(qmc6309_raw_status_1_get(context, &status_1));
 
-	*val = status_1.drdy_bit;
+	*val = status_1.nvm_load_done_bit;
 
 	return 0;
 }
@@ -644,7 +644,7 @@ int32_t WEAK qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng,
 		return 0;
 	}
 
-	// Store the data ststus to the full output struct.
+	// Store the data status to the full output struct.
 	val->output_ready		= status_1.drdy_bit; // Store the data-ready status.
 	val->output_overflow	= status_1.ovfl_bit; // Store the data overflow status.
 
