@@ -192,9 +192,9 @@ int32_t WEAK qmc6309_raw_selftest_z_get(const qmc_context_t* context, uint8_t* v
 }
 
 // Gauss-per-LSB at each full scale range.
-const float_t qmc6309_g_per_lsb_32g	= 1.0f / 32767.0f * 8;	// Gauss-per-LSB at 32G full scale range..
-const float_t qmc6309_g_per_lsb_16g	= 1.0f / 32767.0f * 16;	// Gauss-per-LSB at 16G full scale range.
-const float_t qmc6309_g_per_lsb_8g	= 1.0f / 32767.0f * 32;	// Gauss-per-LSB at 8G full scale range
+const float_t qmc6309_g_per_lsb_32g	= 1.0f / 1000.0f; // Gauss-per-LSB at 32G full scale range.
+const float_t qmc6309_g_per_lsb_16g	= 1.0f / 2000.0f; // Gauss-per-LSB at 16G full scale range.
+const float_t qmc6309_g_per_lsb_8g	= 1.0f / 4000.0f; // Gauss-per-LSB at 8G full scale range
 
 // Look-up table of the Gauss-per-LSB.
 const float_t qmc6309_g_per_lsb[3] = {
