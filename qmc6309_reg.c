@@ -192,9 +192,9 @@ int32_t WEAK qmc6309_raw_selftest_z_get(const qmc_context_t* context, uint8_t* v
 }
 
 // Gauss-per-LSB at each full scale range.
-const float_t qmc6309_g_per_lsb_32g	= 1.0f / 32767.0f * 8; // Gauss-per-LSB at 32G full scale range..
-const float_t qmc6309_g_per_lsb_16g	= 1.0f / 32767.0f * 8; // Gauss-per-LSB at 16G full scale range.
-const float_t qmc6309_g_per_lsb_8g	= 1.0f / 32767.0f * 8; // Gauss-per-LSB at 8G full scale range
+const float_t qmc6309_g_per_lsb_32g	= 1.0f / 32767.0f * 8;	// Gauss-per-LSB at 32G full scale range..
+const float_t qmc6309_g_per_lsb_16g	= 1.0f / 32767.0f * 16;	// Gauss-per-LSB at 16G full scale range.
+const float_t qmc6309_g_per_lsb_8g	= 1.0f / 32767.0f * 32;	// Gauss-per-LSB at 8G full scale range
 
 // Look-up table of the Gauss-per-LSB.
 const float_t qmc6309_g_per_lsb[3] = {
@@ -358,7 +358,7 @@ int32_t WEAK qmc6309_ll_control_1_osr1_get(const qmc_context_t* context, qmc6309
 	return 0;
 }
 
-int32_t WEAK qmc6309_ll_control_1_osr2_set(const qmc_context_t* context, qmc6309_osr1_t val) {
+int32_t WEAK qmc6309_ll_control_1_osr2_set(const qmc_context_t* context, qmc6309_osr2_t val) {
 	qmc6309_control_1_t control_1 = {0};
 
 	// Get the full register data.
@@ -373,7 +373,7 @@ int32_t WEAK qmc6309_ll_control_1_osr2_set(const qmc_context_t* context, qmc6309
 	return 0;
 }
 
-int32_t WEAK qmc6309_ll_control_1_osr2_get(const qmc_context_t* context, qmc6309_osr1_t* val) {
+int32_t WEAK qmc6309_ll_control_1_osr2_get(const qmc_context_t* context, qmc6309_osr2_t* val) {
 	qmc6309_control_1_t control_1 = {0};
 
 	// Get the full register data.
@@ -609,20 +609,21 @@ int32_t WEAK qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val) {
 		FAIL_FAST(qmc6309_ll_status_1_st_rdy_get(context, &ready));
 
 		// Wait 1 millisecond until next self-test ready check.
-		context->delay_milliseconds_function(20);
+		context->delay_milliseconds_function(1);
 	} while (!ready);
 
 	qmc6309_selftest_out_t selftest_out = {0};
 
-	// Read the output data of the self-test to judge if the device is working properly.
-	FAIL_FAST(qmc6309_ll_selftest_get(context, &selftest_out));
+	FAIL_FAST(qmc6309_ll_selftest_get		(context, &selftest_out));	// Read the output data of the self-test to judge if the device is working properly.
+	FAIL_FAST(qmc6309_ll_control_1_mode_set	(context, SUSPEND));		// Switch to suspend mode before restoring mode.
+	FAIL_FAST(qmc6309_ll_control_1_mode_set	(context, mode));			// Restore the original device mode before the self-test.
 
 	if (	selftest_out.selftest_out_x >= -50
 		&&	selftest_out.selftest_out_x <= -1
 		&&	selftest_out.selftest_out_y >= -50
 		&&	selftest_out.selftest_out_y <= -1
-		&&	selftest_out.selftest_out_y >= -50
-		&&	selftest_out.selftest_out_y <= -1
+		&&	selftest_out.selftest_out_z >= -50
+		&&	selftest_out.selftest_out_z <= -1
 	) {
 		*val = PROPERTY_ENABLE;
 	} else {
@@ -632,14 +633,20 @@ int32_t WEAK qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val) {
 	return 0;
 }
 
-int32_t WEAK qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng, qmc6309_out_gauss_t* val) {
-	// Check if the data output is ready to read.
-	FAIL_FAST(qmc6309_ll_status_1_st_rdy_get(context, &val->output_ready));
+int32_t WEAK qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng, qmc6309_out_full_t* val) {
+	qmc6309_status_1_t status_1 = 0;
+
+	// Check if the data output is ready to read and the data overflow status.
+	FAIL_FAST(qmc6309_raw_status_1_get(context, &status_1));
 
 	// We cannot proceed if the data is not ready.
-	if (!val->output_ready) {
+	if (!status_1.drdy_bit) {
 		return 0;
 	}
+
+	// Store the data ststus to the full output struct.
+	val->output_ready		= status_1.drdy_bit; // Store the data-ready status.
+	val->output_overflow	= status_1.ovfl_bit; // Store the data overflow status.
 
 	// Buffer to hold the raw output data read from registers.
 	qmc6309_out_t out = {0};
@@ -650,7 +657,7 @@ int32_t WEAK qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng,
 	// Read the data output.
 	FAIL_FAST(qmc6309_ll_mag_get(context, &out));
 
-	// Convert and store the data to the gauss output sturct.
+	// Convert and store the data to the full output sturct.
 	val->output_gauss_x = ((float_t) out.out_x.out_single) * gauss_per_lsb; // Convert and store the X-Axis raw data.
 	val->output_gauss_y = ((float_t) out.out_y.out_single) * gauss_per_lsb; // Convert and store the Y-Axis raw data.
 	val->output_gauss_z = ((float_t) out.out_z.out_single) * gauss_per_lsb; // Convert and store the Z-Axis raw data.

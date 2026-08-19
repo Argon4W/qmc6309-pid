@@ -77,11 +77,16 @@ typedef struct {
 /**
  * @brief Chip properties.
  */
-
 /** I2C Device Address in 8-bit format. */
-#define QMC6309_I2C_ADDRESS	0x7CU
-/** ChipID/WhoAMI value from register 0x00U (Chip ID register). */
-#define QMC6309_CHIP_ID		0x90U
+#define QMC6309_I2C_ADDRESS 0x7CU
+
+/**
+ * @brief Chip identity register related.
+ */
+/** Chip ID Register. */
+#define QMC6309_CHIP_ID		0x00U
+/** Chip ID reference value. */
+#define QMC6309_CHIP_ID_REF	0x90U
 
 /**
  * @brief	Data output registers.
@@ -131,9 +136,9 @@ typedef struct {
 		qmc6309_out_single_t out_y; /*!< Data output Y registers YOUT[15:0]. */
 		qmc6309_out_single_t out_z; /*!< Data output Z registers ZOUT[15:0]. */
 	#else
-		qmc6309_out_single_t out_z: 16; /*!< Data output Z registers ZOUT[15:0]. */
-		qmc6309_out_single_t out_y: 16; /*!< Data output Y registers YOUT[15:0]. */
-		qmc6309_out_single_t out_x: 16; /*!< Data output X registers XOUT[15:0]. */
+		qmc6309_out_single_t out_z; /*!< Data output Z registers ZOUT[15:0]. */
+		qmc6309_out_single_t out_y; /*!< Data output Y registers YOUT[15:0]. */
+		qmc6309_out_single_t out_x; /*!< Data output X registers XOUT[15:0]. */
 	#endif // DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
 } PACKED qmc6309_out_t;
 
@@ -251,7 +256,7 @@ typedef struct {
 typedef enum {
 	SET_RESET_ON	= 0b00 /*!< Set and reset on. */,
 	SET_ONLY_ON		= 0b01 /*!< Set only on. */,
-	SET_RESET_OFF	= 0b11 /*!< Set and reset off. */
+	SET_RESET_OFF	= 0b10 /*!< Set and reset off. */
 } qmc6309_set_reset_mode_t;
 
 /**
@@ -798,11 +803,12 @@ int32_t qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val);
  * @brief Gauss data output struct.
  */
 typedef struct {
-	uint8_t output_ready;	/*!< The data-ready status of this read. ("0" = data is not ready; "1" = data is ready) */
-	float_t output_gauss_x; /*!< Data output of X-Axis in Gauss (or undefined if data is not ready). */
-	float_t output_gauss_y; /*!< Data output of Y-Axis in Gauss (or undefined if data is not ready). */
-	float_t output_gauss_z; /*!< Data output of Z-Axis in Gauss (or undefined if data is not ready). */
-} qmc6309_out_gauss_t;
+	uint8_t output_ready;		/*!< The data-ready status of this read. ("0" = data is not ready; "1" = data is ready) */
+	uint8_t output_overflow;	/*!< The data-overflow status of this read. ("0" = No data overflow occurred; "1" = Data overflow occurs) */
+	float_t output_gauss_x; 	/*!< Data output of X-Axis in Gauss (or undefined if data is not ready). */
+	float_t output_gauss_y; 	/*!< Data output of Y-Axis in Gauss (or undefined if data is not ready). */
+	float_t output_gauss_z; 	/*!< Data output of Z-Axis in Gauss (or undefined if data is not ready). */
+} qmc6309_out_full_t;
 
 /**
  * @brief			Get the data output in gauss.
@@ -811,7 +817,7 @@ typedef struct {
  * @param val		The buffer to hold the output data.
  * @retval			status of implementation function interfaces, ("0" = no error)
  */
-int32_t qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng, qmc6309_out_gauss_t* val);
+int32_t qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng, qmc6309_out_full_t* val);
 
 #ifdef __cplusplus
 }
