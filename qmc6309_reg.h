@@ -41,7 +41,8 @@ extern "C" {
 #define PROPERTY_ENABLE		(1U)
 
 /**
- * @brief Platform independent function type of writing to a generic register of the device. ("0" = no error)
+ * @brief	Platform independent function type of writing to a generic register of the device. ("0" = no error)
+ * @retval	status of implementation function interfaces, ("0" = no error)
  */
 typedef int32_t (*qmc_write_register_function_ptr)(
 	void*			user_handle,		/*!< The user-defined custom handle needed by the implementation, as pointer. */
@@ -51,7 +52,8 @@ typedef int32_t (*qmc_write_register_function_ptr)(
 );
 
 /**
- * @brief Platform independent function type of reading from a generic register of the device. ("0" = no error)
+ * @brief	Platform independent function type of reading from a generic register of the device. ("0" = no error)
+ * @retval	status of implementation function interfaces, ("0" = no error)
  */
 typedef int32_t (*qmc_read_register_function_ptr)(
 	void*		user_handle,		/*!< The user-defined custom handle needed by the implementation, as pointer. */
@@ -65,6 +67,9 @@ typedef int32_t (*qmc_read_register_function_ptr)(
  */
 typedef void (*qmc_delay_milliseconds_function_ptr)(uint32_t milliseconds);
 
+/**
+ * @brief Platform independent driver function interface context.
+ */
 typedef struct {
 	qmc_write_register_function_ptr		write_register_function;		/*!< Implementation function of writing to registers. */
 	qmc_read_register_function_ptr		read_register_function;			/*!< Implementation function of reading from registers. */
