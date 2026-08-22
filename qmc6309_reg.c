@@ -11,7 +11,7 @@ int32_t WEAK qmc6309_raw_read_register(
 		return -1;
 	}
 
-	return context->read_register_function(
+	return context->read_register(
 		/* user_handle		= */ context->user_handle,
 		/* register_address	= */ register_address,
 		/* buffer			= */ buffer,
@@ -30,7 +30,7 @@ int32_t WEAK qmc6309_raw_write_register(
 		return -1;
 	}
 
-	return context->write_register_function(
+	return context->write_register(
 		/* user_handle		= */ context->user_handle,
 		/* register_address	= */ register_address,
 		/* buffer			= */ buffer,
@@ -215,40 +215,78 @@ float_t WEAK qmc6309_ll_from_rng32_to_gauss(int16_t lsb) {
 	return ((float_t) lsb) * qmc6309_g_per_lsb_32g;
 }
 
-int32_t WEAK qmc6309_ll_mag_x_get(const qmc_context_t* context, qmc6309_out_single_t* val) {
-	return qmc6309_raw_read_register(
+int32_t WEAK qmc6309_ll_mag_x_get(const qmc_context_t* context, int16_t* val) {
+	// Reserve 2 bytes for the output.
+	uint8_t buffer[2];
+
+	// Read LSB and HSB output registers.
+	FAIL_FAST(qmc6309_raw_read_register(
 		/* context			= */ context,
 		/* register_address	= */ QMC6309_OUT_X_L,
-		/* buffer			= */ (uint8_t*) val,
+		/* buffer			= */ buffer,
 		/* length			= */ 2
-	);
+	));
+
+	// Pack 2 bytes into a signed short.
+	*val = (int16_t) (((uint16_t) buffer[1] << 8) | buffer[0]);
+
+	return 0;
 }
 
-int32_t WEAK qmc6309_ll_mag_y_get(const qmc_context_t* context, qmc6309_out_single_t* val) {
-	return qmc6309_raw_read_register(
+int32_t WEAK qmc6309_ll_mag_y_get(const qmc_context_t* context, int16_t* val) {
+	// Reserve 2 bytes for the output.
+	uint8_t buffer[2];
+
+	// Read LSB and HSB output registers.
+	FAIL_FAST(qmc6309_raw_read_register(
 		/* context			= */ context,
 		/* register_address	= */ QMC6309_OUT_Y_L,
-		/* buffer			= */ (uint8_t*) val,
+		/* buffer			= */ buffer,
 		/* length			= */ 2
-	);
+	));
+
+	// Pack 2 bytes into a signed short.
+	*val = (int16_t) (((uint16_t) buffer[1] << 8) | buffer[0]);
+
+	return 0;
 }
 
-int32_t WEAK qmc6309_ll_mag_z_get(const qmc_context_t* context, qmc6309_out_single_t* val) {
-	return qmc6309_raw_read_register(
+int32_t WEAK qmc6309_ll_mag_z_get(const qmc_context_t* context, int16_t* val) {
+	// Reserve 2 bytes for the output.
+	uint8_t buffer[2];
+
+	// Read LSB and HSB output registers.
+	FAIL_FAST(qmc6309_raw_read_register(
 		/* context			= */ context,
 		/* register_address	= */ QMC6309_OUT_Z_L,
-		/* buffer			= */ (uint8_t*) val,
+		/* buffer			= */ buffer,
 		/* length			= */ 2
-	);
+	));
+
+	// Pack 2 bytes into a signed short.
+	*val = (int16_t) (((uint16_t) buffer[1] << 8) | buffer[0]);
+
+	return 0;
 }
 
 int32_t WEAK qmc6309_ll_mag_get(const qmc_context_t* context, qmc6309_out_t* val) {
-	return qmc6309_raw_read_register(
+	// Reserve 6 bytes for the output.
+	uint8_t buffer[6];
+
+	// Read all output registers.
+	qmc6309_raw_read_register(
 		/* context			= */ context,
 		/* register_address	= */ QMC6309_OUT_X_L,
-		/* buffer			= */ (uint8_t*) val,
+		/* buffer			= */ buffer,
 		/* length			= */ 6
 	);
+
+	// Pack every 2 bytes into signed shorts.
+	val->out_x = (int16_t) (((uint16_t) buffer[1] << 8) | buffer[0]); // Pack X-axis output data.
+	val->out_y = (int16_t) (((uint16_t) buffer[3] << 8) | buffer[2]); // Pack Y-axis output data.
+	val->out_z = (int16_t) (((uint16_t) buffer[5] << 8) | buffer[4]); // Pack Z-axis output data.
+
+	return 0;
 }
 
 int32_t WEAK qmc6309_ll_status_1_drdy_get(const qmc_context_t* context, uint8_t* val) {
@@ -582,7 +620,7 @@ int32_t WEAK qmc6309_hl_mode_switch(const qmc_context_t* context, qmc6309_mode_t
 
 int32_t WEAK qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val) {
 	// Cannot proceed without the delay function.
-	if (context->delay_milliseconds_function == NULL) {
+	if (context->delay_milliseconds == NULL) {
 		return -1;
 	}
 
@@ -594,13 +632,13 @@ int32_t WEAK qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val) {
 	FAIL_FAST(qmc6309_ll_control_1_mode_set(context, CONTINUOUS));	// Switch to continuous mode for self-test.
 
 	// Wait 20 milliseconds until measurement ends.
-	context->delay_milliseconds_function(20);
+	context->delay_milliseconds(20);
 
 	// Set self-test enable.
 	FAIL_FAST(qmc6309_ll_control_3_selftest_set(context, PROPERTY_ENABLE));
 
 	// Wait 150 milliseconds until measurement ends.
-	context->delay_milliseconds_function(150);
+	context->delay_milliseconds(150);
 
 	uint8_t ready = 0U;
 
@@ -609,7 +647,7 @@ int32_t WEAK qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val) {
 		FAIL_FAST(qmc6309_ll_status_1_st_rdy_get(context, &ready));
 
 		// Wait 1 millisecond until next self-test ready check.
-		context->delay_milliseconds_function(1);
+		context->delay_milliseconds(1);
 	} while (!ready);
 
 	qmc6309_selftest_out_t selftest_out = {0};
@@ -657,10 +695,10 @@ int32_t WEAK qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng,
 	// Read the data output.
 	FAIL_FAST(qmc6309_ll_mag_get(context, &out));
 
-	// Convert and store the data to the full output sturct.
-	val->output_gauss_x = ((float_t) out.out_x.out_single) * gauss_per_lsb; // Convert and store the X-Axis raw data.
-	val->output_gauss_y = ((float_t) out.out_y.out_single) * gauss_per_lsb; // Convert and store the Y-Axis raw data.
-	val->output_gauss_z = ((float_t) out.out_z.out_single) * gauss_per_lsb; // Convert and store the Z-Axis raw data.
+	// Convert and store the data to the full output struct.
+	val->output_gauss_x = ((float_t) out.out_x) * gauss_per_lsb; // Convert and store the X-Axis raw data.
+	val->output_gauss_y = ((float_t) out.out_y) * gauss_per_lsb; // Convert and store the Y-Axis raw data.
+	val->output_gauss_z = ((float_t) out.out_z) * gauss_per_lsb; // Convert and store the Z-Axis raw data.
 
 	return 0;
 }

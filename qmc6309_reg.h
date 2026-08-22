@@ -71,10 +71,10 @@ typedef void (*qmc_delay_milliseconds_function_ptr)(uint32_t milliseconds);
  * @brief Platform independent driver function interface context.
  */
 typedef struct {
-	qmc_write_register_function_ptr		write_register_function;		/*!< Implementation function of writing to registers. */
-	qmc_read_register_function_ptr		read_register_function;			/*!< Implementation function of reading from registers. */
-	qmc_delay_milliseconds_function_ptr	delay_milliseconds_function;	/*!< Implementation function of delaying milliseconds. */
-	void*								user_handle;					/*!< The user-defined custom handle needed by the implementation. */
+	qmc_write_register_function_ptr		write_register;		/*!< Implementation function of writing to registers. */
+	qmc_read_register_function_ptr		read_register;		/*!< Implementation function of reading from registers. */
+	qmc_delay_milliseconds_function_ptr	delay_milliseconds;	/*!< Implementation function of delaying milliseconds. */
+	void*								user_handle;		/*!< The user-defined custom handle needed by the implementation. */
 } qmc_context_t;
 
 #endif // QMC_SHARED_TYPES
@@ -111,41 +111,13 @@ typedef struct {
 #define QMC6309_OUT_Z_H 0x06U
 
 /**
- * @brief	Single axis raw data struct.
- *			Each axis has 16-bit data width in 2’s complement.
- */
-typedef struct {
-	#if DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-		uint8_t out_l : 8; /*!< LSB [7:0]. */
-		uint8_t out_h : 8; /*!< MSB [15:8]. */
-	#else
-		uint8_t out_h : 8; /*!< MSB [15:8]. */
-		uint8_t out_l : 8; /*!< LSB [7:0]. */
-	#endif // DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-} PACKED qmc6309_out_single_raw_t;
-
-/**
- * @brief Access 16-bit combined results from two separate 8-bit registers.
- */
-typedef union {
-	int16_t						out_single;		/*!< Data output OUT[15:0] combined. */
-	qmc6309_out_single_raw_t	out_single_raw;	/*!< Data output OUT[0:7] (LSB) and OUT[15:8] (MSB) separately. */
-} PACKED qmc6309_out_single_t;
-
-/**
  * @brief Full output (3-axis) raw data struct.
  */
 typedef struct {
-	#if DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-		qmc6309_out_single_t out_x; /*!< Data output X registers XOUT[15:0]. */
-		qmc6309_out_single_t out_y; /*!< Data output Y registers YOUT[15:0]. */
-		qmc6309_out_single_t out_z; /*!< Data output Z registers ZOUT[15:0]. */
-	#else
-		qmc6309_out_single_t out_z; /*!< Data output Z registers ZOUT[15:0]. */
-		qmc6309_out_single_t out_y; /*!< Data output Y registers YOUT[15:0]. */
-		qmc6309_out_single_t out_x; /*!< Data output X registers XOUT[15:0]. */
-	#endif // DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-} PACKED qmc6309_out_t;
+	int16_t out_x; /*!< Data output X registers XOUT[15:0]. */
+	int16_t out_y; /*!< Data output Y registers YOUT[15:0]. */
+	int16_t out_z; /*!< Data output Z registers ZOUT[15:0]. */
+} qmc6309_out_t;
 
 /**
  * @brief Status register 1.
@@ -542,7 +514,7 @@ float_t qmc6309_ll_from_rng32_to_gauss(int16_t lsb);
  * @param val		Destination buffer for the magnetometer data, as pointer.
  * @retval			status of implementation function interfaces, ("0" = no error)
  */
-int32_t qmc6309_ll_mag_x_get(const qmc_context_t* context, qmc6309_out_single_t* val);
+int32_t qmc6309_ll_mag_x_get(const qmc_context_t* context, int16_t* val);
 
 /**
  * @brief			Get raw magnetometer data on Y-axis.
@@ -550,7 +522,7 @@ int32_t qmc6309_ll_mag_x_get(const qmc_context_t* context, qmc6309_out_single_t*
  * @param val		Destination buffer for the magnetometer data, as pointer.
  * @retval			status of implementation function interfaces, ("0" = no error)
  */
-int32_t qmc6309_ll_mag_y_get(const qmc_context_t* context, qmc6309_out_single_t* val);
+int32_t qmc6309_ll_mag_y_get(const qmc_context_t* context, int16_t* val);
 
 /**
  * @brief			Get raw magnetometer data on Z-axis.
@@ -558,7 +530,7 @@ int32_t qmc6309_ll_mag_y_get(const qmc_context_t* context, qmc6309_out_single_t*
  * @param val		Destination buffer for the magnetometer data, as pointer.
  * @retval			status of implementation function interfaces, ("0" = no error)
  */
-int32_t qmc6309_ll_mag_z_get(const qmc_context_t* context, qmc6309_out_single_t* val);
+int32_t qmc6309_ll_mag_z_get(const qmc_context_t* context, int16_t* val);
 
 /**
  * @brief			Get raw magnetometer data.
