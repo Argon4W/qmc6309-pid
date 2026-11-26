@@ -230,9 +230,9 @@ typedef struct {
  * @brief Set and reset mode control[1:0] selections in control register 2.
  */
 typedef enum {
-	SET_RESET_ON	= 0b00 /*!< Set and reset on. */,
-	SET_ONLY_ON		= 0b01 /*!< Set only on. */,
-	SET_RESET_OFF	= 0b10 /*!< Set and reset off. */
+	SET_RESET_ON	= 0b00,	/*!< Set and reset on. */
+	SET_ONLY_ON		= 0b01,	/*!< Set only on. */
+	SET_RESET_OFF	= 0b10	/*!< Set and reset off. */
 } qmc6309_set_reset_mode_t;
 
 /**
