@@ -90,7 +90,7 @@ typedef struct {
 /**
  * @brief Chip properties.
  */
-/** I2C Device Address in 8-bit format. */
+/** I2C Device Address in 7-bit format. */
 #define QMC6309_I2C_ADDRESS 0x7CU
 
 /**
