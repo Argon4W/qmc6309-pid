@@ -41,25 +41,33 @@ extern "C" {
 #define PROPERTY_ENABLE		(1U)
 
 /**
- * @brief	Platform independent function type of writing to a generic register of the device. ("0" = no error)
- * @retval	status of implementation function interfaces, ("0" = no error)
+ * @brief				Platform independent function type of reading from a generic register of the device. ("0" = no error)
+ * @param user_handle	the user-defined custom handle needed by the implementation, as pointer.
+ * @param address		the first register address to be read.
+ * @param buffer		the buffer to hold the data read from the registers, as pointer.
+ * @param length		the count of registers we want to read from.
+ * @retval				status of implementation function interfaces. ("0" = no error)
  */
-typedef int32_t (*qmc_write_register_function_ptr)(
-	void*			user_handle,		/*!< The user-defined custom handle needed by the implementation, as pointer. */
-	uint8_t			register_address,	/*!<  The first register address to be written. */
-	const uint8_t*	buffer,				/*!<  The data to be written to the registers, as pointer. */
-	uint16_t		length				/*!<  The count of registers we want to write to. */
+typedef int32_t (*qmc_read_register_function_ptr)(
+	void*		user_handle,
+	uint8_t		address,
+	uint8_t*	buffer,
+	uint16_t	length
 );
 
 /**
- * @brief	Platform independent function type of reading from a generic register of the device. ("0" = no error)
- * @retval	status of implementation function interfaces, ("0" = no error)
+ * @brief				Platform independent function type of writing to a generic register of the device. ("0" = no error)
+ * @param user_handle	the user-defined custom handle needed by the implementation, as pointer.
+ * @param address		the first register address to be written.
+ * @param buffer		the data to be written to the registers, as pointer.
+ * @param length		the count of registers we want to write to.
+ * @retval				status of implementation function interfaces. ("0" = no error)
  */
-typedef int32_t (*qmc_read_register_function_ptr)(
-	void*		user_handle,		/*!< The user-defined custom handle needed by the implementation, as pointer. */
-	uint8_t		register_address,	/*!< The first register address to be read. */
-	uint8_t*	buffer,				/*!< The buffer to hold the data read from the registers, as pointer. */
-	uint16_t	length				/*!< The count of registers we want to read from. */
+typedef int32_t (*qmc_write_register_function_ptr)(
+			void*		user_handle,
+			uint8_t		address,
+	const	uint8_t*	buffer,
+			uint16_t	length
 );
 
 /**
@@ -71,8 +79,8 @@ typedef void (*qmc_delay_milliseconds_function_ptr)(uint32_t milliseconds);
  * @brief Platform independent driver function interface context.
  */
 typedef struct {
-	qmc_write_register_function_ptr		write_register;		/*!< Implementation function of writing to registers. */
 	qmc_read_register_function_ptr		read_register;		/*!< Implementation function of reading from registers. */
+	qmc_write_register_function_ptr		write_register;		/*!< Implementation function of writing to registers. */
 	qmc_delay_milliseconds_function_ptr	delay_milliseconds;	/*!< Implementation function of delaying milliseconds. */
 	void*								user_handle;		/*!< The user-defined custom handle needed by the implementation. */
 } qmc_context_t;
@@ -111,15 +119,6 @@ typedef struct {
 #define QMC6309_OUT_Z_H 0x06U
 
 /**
- * @brief Full output (3-axis) raw data struct.
- */
-typedef struct {
-	int16_t out_x; /*!< Data output X registers XOUT[15:0]. */
-	int16_t out_y; /*!< Data output Y registers YOUT[15:0]. */
-	int16_t out_z; /*!< Data output Z registers ZOUT[15:0]. */
-} qmc6309_out_t;
-
-/**
  * @brief Status register 1.
  */
 #define QMC6309_STATUS_1					0x09U
@@ -139,21 +138,21 @@ typedef struct {
  */
 typedef struct {
 	#if DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-		uint8_t drdy_bit			: 1; /*!< QMC6309_STATUS_1_DRDY_BIT */
-		uint8_t ovfl_bit			: 1; /*!< QMC6309_STATUS_1_OVFL_BIT */
-		uint8_t st_rdy_bit			: 1; /*!< QMC6309_STATUS_1_ST_RDY_BIT */
-		uint8_t nvm_rdy_bit			: 1; /*!< QMC6309_STATUS_1_NVM_RDY_BIT */
-		uint8_t nvm_load_done_bit	: 1; /*!< QMC6309_STATUS_1_NVM_LOAD_DONE_BIT */
+		uint8_t drdy_bit			: 1; /*!< QMC6309_STATUS_1_DRDY_BIT. */
+		uint8_t ovfl_bit			: 1; /*!< QMC6309_STATUS_1_OVFL_BIT. */
+		uint8_t st_rdy_bit			: 1; /*!< QMC6309_STATUS_1_ST_RDY_BIT. */
+		uint8_t nvm_rdy_bit			: 1; /*!< QMC6309_STATUS_1_NVM_RDY_BIT. */
+		uint8_t nvm_load_done_bit	: 1; /*!< QMC6309_STATUS_1_NVM_LOAD_DONE_BIT. */
 		uint8_t reserved			: 3; /*!< Reserved. */
 	#else
 		uint8_t reserved			: 3; /*!< Reserved. */
-		uint8_t nvm_load_done_bit	: 1; /*!< QMC6309_STATUS_1_NVM_LOAD_DONE_BIT */
-		uint8_t nvm_rdy_bit			: 1; /*!< QMC6309_STATUS_1_NVM_RDY_BIT */
-		uint8_t st_rdy_bit			: 1; /*!< QMC6309_STATUS_1_ST_RDY_BIT */
-		uint8_t ovfl_bit			: 1; /*!< QMC6309_STATUS_1_OVFL_BIT */
-		uint8_t drdy_bit			: 1; /*!< QMC6309_STATUS_1_DRDY_BIT */
+		uint8_t nvm_load_done_bit	: 1; /*!< QMC6309_STATUS_1_NVM_LOAD_DONE_BIT. */
+		uint8_t nvm_rdy_bit			: 1; /*!< QMC6309_STATUS_1_NVM_RDY_BIT. */
+		uint8_t st_rdy_bit			: 1; /*!< QMC6309_STATUS_1_ST_RDY_BIT. */
+		uint8_t ovfl_bit			: 1; /*!< QMC6309_STATUS_1_OVFL_BIT. */
+		uint8_t drdy_bit			: 1; /*!< QMC6309_STATUS_1_DRDY_BIT. */
 	#endif // DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-} PACKED qmc6309_status_1_t;
+} PACKED qmc6309_raw_status_1_t;
 
 /**
  * @brief Control register 1.
@@ -167,34 +166,34 @@ typedef struct {
 #define QMC6309_CONTROL_1_OSR2_START_BIT	5
 
 /**
- * @brief Modes of mode control[1:0] in control register 1.
+ * @brief Modes of mode control[1:0] selections in control register 1.
  */
 typedef enum {
-	SUSPEND		= 0b00U, /*!< Suspend Mode. */
-	NORMAL		= 0b01U, /*!< Normal Mode. */
-	SINGLE		= 0b10U, /*!< Single Mode. */
-	CONTINUOUS	= 0b11U /*!< Continuous Mode. */
+	SUSPEND		= 0b00U,	/*!< Suspend Mode. */
+	NORMAL		= 0b01U,	/*!< Normal Mode. */
+	SINGLE		= 0b10U,	/*!< Single Mode. */
+	CONTINUOUS	= 0b11U		/*!< Continuous Mode. */
 } qmc6309_mode_t;
 
 /**
  * @brief Over sample ratio[4:3] selections in control register 1.
  */
 typedef enum {
-	OSR1_8 = 0b00U, /*!< Over sample ratio 8. */
-	OSR1_4 = 0b01U, /*!< Over sample ratio 4. */
-	OSR1_2 = 0b10U, /*!< Over sample ratio 2. */
-	OSR1_1 = 0b11U /*!< Over sample ratio 1. */
+	OSR1_8 = 0b00U,	/*!< Over sample ratio 8. */
+	OSR1_4 = 0b01U,	/*!< Over sample ratio 4. */
+	OSR1_2 = 0b10U,	/*!< Over sample ratio 2. */
+	OSR1_1 = 0b11U	/*!< Over sample ratio 1. */
 } qmc6309_osr1_t;
 
 /**
  * @brief Low pass filter[7:5] depth selections in control register 1.
  */
 typedef enum {
-	OSR2_1	= 0b000U, /*!< Low pass filter depth 1. */
-	OSR2_2	= 0b001U, /*!< Low pass filter depth 2. */
-	OSR2_4	= 0b010U, /*!< Low pass filter depth 4. */
-	OSR2_8	= 0b011U, /*!< Low pass filter depth 8. */
-	OSR2_16	= 0b100U /*!< Low pass filter depth 16. */
+	OSR2_1	= 0b000U,	/*!< Low pass filter depth 1. */
+	OSR2_2	= 0b001U,	/*!< Low pass filter depth 2. */
+	OSR2_4	= 0b010U,	/*!< Low pass filter depth 4. */
+	OSR2_8	= 0b011U,	/*!< Low pass filter depth 8. */
+	OSR2_16	= 0b100U	/*!< Low pass filter depth 16. */
 } qmc6309_osr2_t;
 
 /**
@@ -212,7 +211,7 @@ typedef struct {
 		uint8_t reserved	: 1; /*!< Reserved. */
 		uint8_t mode		: 2; /*!< QMC6309_CONTROL_1_MODE_START_BIT, qmc6309_mode_t. */
 	#endif // DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-} PACKED qmc6309_control_1_t;
+} PACKED qmc6309_raw_control_1_t;
 
 /**
  * @brief Control register 2.
@@ -228,7 +227,7 @@ typedef struct {
 #define QMC6309_CONTROL_2_SOFT_RST_BIT				7
 
 /**
- * @brief Set and reset mode control[1:0] in control register 2.
+ * @brief Set and reset mode control[1:0] selections in control register 2.
  */
 typedef enum {
 	SET_RESET_ON	= 0b00 /*!< Set and reset on. */,
@@ -271,7 +270,7 @@ typedef struct {
 		uint8_t rng				: 2; /*!< QMC6309_CONTROL_2_RNG_START_BIT, qmc6309_rng_t. */
 		uint8_t set_reset_mode	: 2; /*!< QMC6309_CONTROL_2_SET_RESET_MODE_START_BIT, qmc6309_set_reset_mode_t. */
 	#endif // DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-} PACKED qmc6309_control_2_t;
+} PACKED qmc6309_raw_control_2_t;
 
 /**
  * @brief Control register 3.
@@ -295,13 +294,13 @@ typedef struct {
  */
 typedef struct {
 	#if DEVICE_BYTE_ORDER == DEVICE_LITTLE_ENDIAN
-		uint8_t reserved : 7; /*!< Reserved. **/
+		uint8_t reserved : 7; /*!< Reserved. */
 		uint8_t selftest : 1; /*!< QMC6309_CONTROL_3_SELFTEST_BIT. */
 	#else
 		uint8_t selftest : 1; /*!< QMC6309_CONTROL_3_SELFTEST_BIT. */
 		uint8_t reserved : 7; /*!< Reserved. */
 	#endif
-} PACKED qmc6309_control_3_t;
+} PACKED qmc6309_raw_control_3_t;
 
 /**
  * @brief Make sure driver functions can be overridden by user-defined custom implementations.
@@ -314,178 +313,197 @@ typedef struct {
  * @brief		Fail fast when the return value is indicating an error. ("0" = no error; other value = error)
  * @param val	The expression that needs to be checked.
  */
+#ifndef FAIL_FAST
 #define FAIL_FAST(val) do {	\
 	int32_t result = (val);	\
 	if (result != 0) {		\
 		return result;		\
 	}						\
-} while (0);				\
+} while (0);
+#endif // FAIL_FAST
 
 /**
- * @brief	Read from a generic device register.
- * @param	context				implementation of the platform independent function interfaces, as pointer.
- * @param	register_address	first register address to read.
- * @param	buffer				destination buffer of the buffer read, as pointer.
- * @param	length				number of registers to read.
- * @retval						status of implementation function interfaces, ("0" = no error)
+ * @brief			Read from a generic device register.
+ * @param context	implementation of the platform independent function interfaces, as pointer.
+ * @param address	first register address to read.
+ * @param buffer	buffer of the buffer read, as pointer.
+ * @param length	number of registers to read.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_read_register(
-	const qmc_context_t*	context,
-	uint8_t					register_address,
-	uint8_t*				buffer,
-	uint16_t				length
+	const	qmc_context_t*	context,
+			uint8_t			address,
+			uint8_t*		buffer,
+			uint16_t		length
 );
 
 /**
- * @brief	Write to a generic device register.
- * @param	context				implementation of the platform independent function interfaces, as pointer.
- * @param	register_address	first register address to write.
- * @param	buffer				source buffer of the buffer write, as pointer.
- * @param	length				number of registers to write.
- * @retval						status of implementation function interfaces, ("0" = no error)
+ * @brief			Write to a generic device register.
+ * @param context	implementation of the platform independent function interfaces, as pointer.
+ * @param address	first register address to write.
+ * @param buffer	buffer of the buffer write, as pointer.
+ * @param length	number of registers to write.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_write_register(
-	const qmc_context_t*	context,
-	uint8_t					register_address,
-	uint8_t*				buffer,
-	uint16_t				length
+	const	qmc_context_t*	context,
+			uint8_t			address,
+	const	uint8_t*		buffer,
+			uint16_t		length
 );
 
 /**
  * @brief			Get raw chip ID.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_chip_id_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw magnetometer LSB data on X-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_mag_x_lsb_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw magnetometer MSB data on X-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_mag_x_msb_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw magnetometer LSB data on Y-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_mag_y_lsb_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw magnetometer MSB data on Y-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_mag_y_msb_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw magnetometer LSB data on Z-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_mag_z_lsb_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw magnetometer MSB data on Z-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_mag_z_msb_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw status from status 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_raw_status_1_get(const qmc_context_t* context, qmc6309_status_1_t* val);
+int32_t qmc6309_raw_status_1_get(const qmc_context_t* context, qmc6309_raw_status_1_t* val);
 
 /**
  * @brief			Overwrite raw configurations into control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Source value for the register write.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		value for the register write.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_raw_control_1_set(const qmc_context_t* context, qmc6309_control_1_t val);
+int32_t qmc6309_raw_control_1_set(const qmc_context_t* context, qmc6309_raw_control_1_t val);
 
 /**
  * @brief			Get raw configurations from control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_raw_control_1_get(const qmc_context_t* context, qmc6309_control_1_t* val);
+int32_t qmc6309_raw_control_1_get(const qmc_context_t* context, qmc6309_raw_control_1_t* val);
 
 /**
  * @brief			Overwrite raw configurations into control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Source value for the register write.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		value for the register write.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_raw_control_2_set(const qmc_context_t* context, qmc6309_control_2_t val);
+int32_t qmc6309_raw_control_2_set(const qmc_context_t* context, qmc6309_raw_control_2_t val);
 
 /**
  * @brief			Get raw configurations from control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_raw_control_2_get(const qmc_context_t* context, qmc6309_control_2_t* val);
+int32_t qmc6309_raw_control_2_get(const qmc_context_t* context, qmc6309_raw_control_2_t* val);
 
 /**
  * @brief			Overwrite raw configurations into control 3 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Source value for the register write.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		value for the register write.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_raw_control_3_set(const qmc_context_t* context, qmc6309_control_3_t val);
+int32_t qmc6309_raw_control_3_set(const qmc_context_t* context, qmc6309_raw_control_3_t val);
 
 /**
  * @brief			Get raw configurations from control 3 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the register read, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_raw_control_3_get(const qmc_context_t* context, qmc6309_control_3_t* val);
+int32_t qmc6309_raw_control_3_get(const qmc_context_t* context, qmc6309_raw_control_3_t* val);
 
 /**
  * @brief			Get raw self-test output data on X-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the self-test output data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_selftest_x_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw self-test output data on Y-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the self-test output data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_selftest_y_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get raw self-test output data on Z-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the self-test output data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the register read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_raw_selftest_z_get(const qmc_context_t* context, uint8_t* val);
+
+/**
+ * @brief Self-test raw data output struct.
+ */
+typedef struct {
+	int8_t selftest_out_x : 8; /*!< Self-test data output X register OUT_SELF_TEST_X[7:0]. */
+	int8_t selftest_out_y : 8; /*!< Self-test data output Y register OUT_SELF_TEST_X[7:0]. */
+	int8_t selftest_out_z : 8; /*!< Self-test data output Z register OUT_SELF_TEST_X[7:0]. */
+} PACKED qmc6309_raw_selftest_out_t;
+
+/**
+ * @brief			Get raw selftest data.
+ * @param context	implementation of the platform independent function interfaces, as pointer.
+ * @param val		buffer for the registers read, as pointer.
+ * @retval			status of implementation function interfaces, ("0" = no error)
+ */
+int32_t qmc6309_raw_selftest_get(const qmc_context_t* context, qmc6309_raw_selftest_out_t* val);
 
 /**
  * @brief		Convert magnetometer lsb into gauss. (full-scale range of 8G)
@@ -496,244 +514,236 @@ float_t qmc6309_ll_from_rng8_to_gauss(int16_t lsb);
 
 /**
  * @brief		Convert magnetometer lsb into gauss. (full-scale range of 16G)
- * @param lsb	Magnetometer raw data when full-scale range is 16G.
- * @retval		Magnetometer value in gauss.
+ * @param lsb	magnetometer raw data when full-scale range is 16G.
+ * @retval		magnetometer value in gauss.
  */
 float_t qmc6309_ll_from_rng16_to_gauss(int16_t lsb);
 
 /**
  * @brief		Convert magnetometer lsb into gauss. (full-scale range of 32G)
- * @param lsb	Magnetometer raw data when full-scale range is 32G.
- * @retval		Magnetometer value in gauss.
+ * @param lsb	magnetometer raw data when full-scale range is 32G.
+ * @retval		magnetometer value in gauss.
  */
 float_t qmc6309_ll_from_rng32_to_gauss(int16_t lsb);
 
 /**
  * @brief			Get raw magnetometer data on X-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the magnetometer data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the magnetometer data, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_mag_x_get(const qmc_context_t* context, int16_t* val);
 
 /**
  * @brief			Get raw magnetometer data on Y-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the magnetometer data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the magnetometer data, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_mag_y_get(const qmc_context_t* context, int16_t* val);
 
 /**
  * @brief			Get raw magnetometer data on Z-axis.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the magnetometer data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the magnetometer data, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_mag_z_get(const qmc_context_t* context, int16_t* val);
 
 /**
+ * @brief QMC6309 Full output (3-axis) raw data struct.
+ */
+typedef struct {
+	int16_t out_x; /*!< Data output X registers XOUT[15:0]. */
+	int16_t out_y; /*!< Data output Y registers YOUT[15:0]. */
+	int16_t out_z; /*!< Data output Z registers ZOUT[15:0]. */
+} qmc6309_ll_out_t;
+
+/**
  * @brief			Get raw magnetometer data.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the magnetometer data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the magnetometer data read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_ll_mag_get(const qmc_context_t* context, qmc6309_out_t* val);
+int32_t qmc6309_ll_mag_get(const qmc_context_t* context, qmc6309_ll_out_t* val);
 
 /**
  * @brief			Get the data-ready status from the status 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the status, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the data-ready status read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_status_1_drdy_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get the overflow status from the status 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the status, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the overflow status read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_status_1_ovfl_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get the self-test-ready status from the status 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the status, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the self-test-ready status read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_status_1_st_rdy_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get the NVM-ready status from the status 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the status, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the NVM-ready status read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_status_1_nvm_rdy_get(const qmc_context_t* context, uint8_t* val);
 
 /**
  * @brief			Get the NVM-load-done status from the status 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the status, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the NVM-load-done status read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_status_1_nvm_load_done_get(const qmc_context_t* context, uint8_t* val);
 
 /**
- * @brief			Set the device mode by the control 1 register.
+ * @brief			Set the device mode selection of the control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Mode selection to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		device mode selection to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_1_mode_set(const qmc_context_t* context, qmc6309_mode_t val);
 
 /**
- * @brief			Get the device mode from the control 1 register.
+ * @brief			Get the device mode selection from the control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the mode, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the device mode selection read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_1_mode_get(const qmc_context_t* context, qmc6309_mode_t* val);
 
 /**
- * @brief			Set the over sample rate by the control 1 register.
+ * @brief			Set the over sample rate selection of the control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Over sample rate selection to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		over sample rate selection to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_1_osr1_set(const qmc_context_t* context, qmc6309_osr1_t val);
 
 /**
- * @brief			Get the over sample rate from the control 1 register.
+ * @brief			Get the over sample rate selection from the control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the over sample rate selection, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the over sample rate selection read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_1_osr1_get(const qmc_context_t* context, qmc6309_osr1_t* val);
 
 /**
- * @brief			Set the low pass filter depth by the control 1 register.
+ * @brief			Set the low pass filter depth selection of the control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Low pass filter depth selection to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		low pass filter depth selection to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_1_osr2_set(const qmc_context_t* context, qmc6309_osr2_t val);
 
 /**
- * @brief			Get the low pass filter depth from the control 1 register.
+ * @brief			Get the low pass filter depth selection from the control 1 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the low pass filter depth selection, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the low pass filter depth selection read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_1_osr2_get(const qmc_context_t* context, qmc6309_osr2_t* val);
 
 /**
- * @brief			Set the set and reset mode by the control 2 register.
+ * @brief			Set the set and reset mode selection of the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Set and reset mode selection to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		set and reset mode selection to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_set_reset_mode_set(const qmc_context_t* context, qmc6309_set_reset_mode_t val);
 
 /**
- * @brief			Get the set and reset mode from the control 2 register.
+ * @brief			Get the set and reset mode selection from the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the set and reset mode selection, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the set and reset mode selection read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_set_reset_mode_get(const qmc_context_t* context, qmc6309_set_reset_mode_t* val);
 
 /**
- * @brief			Set the full scale range by the control 2 register.
+ * @brief			Set the full scale range selection of the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Full scale range selection to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		full scale range selection to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_rng_set(const qmc_context_t* context, qmc6309_rng_t val);
 
 /**
- * @brief			Get the full scale range from the control 2 register.
+ * @brief			Get the full scale range selection from the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the full scale range selection, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the full scale range selection read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_rng_get(const qmc_context_t* context, qmc6309_rng_t* val);
 
 /**
- * @brief			Set the output data rate by the control 2 register.
+ * @brief			Set the output data rate selection of the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Output data rate selection to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		output data rate selection to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_odr_set(const qmc_context_t* context, qmc6309_odr_t val);
 
 /**
- * @brief			Get the output data rate from the control 2 register.
+ * @brief			Get the output data rate selection from the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the output data rate selection, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the output data rate selection read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_odr_get(const qmc_context_t* context, qmc6309_odr_t* val);
 
 /**
- * @brief			Enable/disable the soft reset by the control 2 register.
+ * @brief			set the soft reset state of the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Soft reset state to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		soft reset state to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_soft_rst_set(const qmc_context_t* context, uint8_t val);
 
 /**
  * @brief			Get the soft reset state from the control 2 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the soft reset state, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the soft reset state read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_2_soft_rst_get(const qmc_context_t* context, uint8_t* val);
 
 /**
- * @brief			Enable/disable the self-test by the control 3 register.
+ * @brief			Set the self-test state of the control 3 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Self-test state to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		self-test state to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_3_selftest_set(const qmc_context_t* context, uint8_t val);
 
 /**
- * @brief			Get the self-test status from the control 3 register.
+ * @brief			Get the self-test state from the control 3 register.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the self-test state, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		buffer for the self-test state read, as pointer.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_ll_control_3_selftest_get(const qmc_context_t* context, uint8_t* val);
 
 /**
- * @brief Self-test data output struct.
- */
-typedef struct {
-	int8_t selftest_out_x : 8; /*!< Data output X of self-test. */
-	int8_t selftest_out_y : 8; /*!< Data output Y of self-test. */
-	int8_t selftest_out_z : 8; /*!< Data output Z of self-test. */
-} PACKED qmc6309_selftest_out_t;
-
-/**
- * @brief			Get raw selftest data.
- * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		Destination buffer for the selftest data, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
- */
-int32_t qmc6309_ll_selftest_get(const qmc_context_t* context, qmc6309_selftest_out_t* val);
-
-/**
  * @brief			Soft reset.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_hl_soft_reset(const qmc_context_t* context);
 
 /**
- * @brief Device setup sturct.
+ * @brief QMC6309 Device setup struct.
  */
 typedef struct {
 	qmc6309_mode_t				mode;			/*!< Device mode. */
@@ -741,60 +751,64 @@ typedef struct {
 	qmc6309_rng_t				rng;			/*!< Full scale range. */
 	qmc6309_odr_t				odr;			/*!< Output data range. */
 	qmc6309_osr1_t				osr1;			/*!< Over sample rate. */
-	qmc6309_osr2_t				osr2;			/*!< Low pass filter depth */
+	qmc6309_osr2_t				osr2;			/*!< Low pass filter depth. */
 } qmc6309_setup_t;
 
 /**
  * @brief			Set up device.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		The parameters to set up the device.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		the parameters to set up the device.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_hl_setup(const qmc_context_t* context, qmc6309_setup_t val);
 
 /**
  * @brief			Set up to specified mode followed by the instructions and parameters in the datasheet.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		The device mode to be set.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		the device mode to be set.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_hl_setup_typical(const qmc_context_t* context, qmc6309_mode_t val);
 
 /**
  * @brief			Change device mode.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		The device mode to be set to.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		the device mode to be set to.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_hl_mode_switch(const qmc_context_t* context, qmc6309_mode_t val);
 
 /**
  * @brief			Change device mode to continuous mode.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param val		The buffer to hold the result of the self-test ("0" = not passing the self-test; "1" = working properly).
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param val		the buffer to hold the result of the self-test. ("0" =working properly; "1" = not passing the self-test)
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
 int32_t qmc6309_hl_selftest(const qmc_context_t* context, uint8_t* val);
 
 /**
- * @brief Gauss data output struct.
+ * @brief QMC6309 data output struct in Gauss.
  */
 typedef struct {
 	uint8_t output_ready;		/*!< The data-ready status of this read. ("0" = data is not ready; "1" = data is ready) */
 	uint8_t output_overflow;	/*!< The data-overflow status of this read. ("0" = No data overflow occurred; "1" = Data overflow occurs) */
-	float_t output_gauss_x; 	/*!< Data output of X-Axis in Gauss (or undefined if data is not ready). */
-	float_t output_gauss_y; 	/*!< Data output of Y-Axis in Gauss (or undefined if data is not ready). */
-	float_t output_gauss_z; 	/*!< Data output of Z-Axis in Gauss (or undefined if data is not ready). */
-} qmc6309_out_full_t;
+	float_t gauss_x;			/*!< Data output of X-Axis in Gauss. (or undefined if data is not ready) */
+	float_t gauss_y;			/*!< Data output of Y-Axis in Gauss. (or undefined if data is not ready) */
+	float_t gauss_z;	 		/*!< Data output of Z-Axis in Gauss. (or undefined if data is not ready) */
+} qmc6309_hl_out_t;
 
 /**
  * @brief			Get the data output in gauss.
  * @param context	implementation of the platform independent function interfaces, as pointer.
- * @param rng		The full scale range of the data output.
- * @param val		The buffer to hold the output data.
- * @retval			status of implementation function interfaces, ("0" = no error)
+ * @param rng		the full scale range of the data output.
+ * @param val		the buffer to hold the output data.
+ * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_hl_mag_get(const qmc_context_t* context, qmc6309_rng_t rng, qmc6309_out_full_t* val);
+int32_t qmc6309_hl_mag_get(
+	const	qmc_context_t*		context,
+			qmc6309_rng_t		rng,
+			qmc6309_hl_out_t*	val
+);
 
 #ifdef __cplusplus
 }
