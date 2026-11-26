@@ -607,9 +607,9 @@ int32_t WEAK qmc6309_hl_soft_reset(const qmc_context_t* context) {
 	return 0;
 }
 
-int32_t WEAK qmc6309_hl_setup_typical(const qmc_context_t* context, qmc6309_mode_t val) {
+int32_t WEAK qmc6309_hl_setup_typical(const qmc_context_t* context, const qmc6309_mode_t val) {
 	// Typical setup.
-	const qmc6309_setup_t setup = {
+	const qmc6309_hl_setup_t setup = {
 		.mode			= val,
 		.set_reset_mode	= SET_RESET_ON,
 		.rng			= RNG_32G,
@@ -622,7 +622,7 @@ int32_t WEAK qmc6309_hl_setup_typical(const qmc_context_t* context, qmc6309_mode
 	return qmc6309_hl_setup(context, setup);
 }
 
-int32_t WEAK qmc6309_hl_setup(const qmc_context_t* context, qmc6309_setup_t val) {
+int32_t WEAK qmc6309_hl_setup(const qmc_context_t* context, const qmc6309_hl_setup_t val) {
 	// Set up the CONTROL_1 register value.
 	const qmc6309_raw_control_1_t control_1 = {
 		.mode		= val.mode,
@@ -646,7 +646,7 @@ int32_t WEAK qmc6309_hl_setup(const qmc_context_t* context, qmc6309_setup_t val)
 	return 0;
 }
 
-int32_t WEAK qmc6309_hl_mode_switch(const qmc_context_t* context, qmc6309_mode_t val) {
+int32_t WEAK qmc6309_hl_mode_switch(const qmc_context_t* context, const qmc6309_mode_t val) {
 	// Switch to suspend mode first before switching to other modes.
 	FAIL_FAST(qmc6309_ll_control_1_mode_set(context, SUSPEND));
 

@@ -752,7 +752,7 @@ typedef struct {
 	qmc6309_odr_t				odr;			/*!< Output data range. */
 	qmc6309_osr1_t				osr1;			/*!< Over sample rate. */
 	qmc6309_osr2_t				osr2;			/*!< Low pass filter depth. */
-} qmc6309_setup_t;
+} qmc6309_hl_setup_t;
 
 /**
  * @brief			Set up device.
@@ -760,7 +760,7 @@ typedef struct {
  * @param val		the parameters to set up the device.
  * @retval			status of implementation function interfaces. ("0" = no error)
  */
-int32_t qmc6309_hl_setup(const qmc_context_t* context, qmc6309_setup_t val);
+int32_t qmc6309_hl_setup(const qmc_context_t* context, qmc6309_hl_setup_t val);
 
 /**
  * @brief			Set up to specified mode followed by the instructions and parameters in the datasheet.
