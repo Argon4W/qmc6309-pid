@@ -23,8 +23,8 @@ The driver is platform-independent, you only need to define two functions for re
 
 ```c++
 /** return value: 0 = "no error occurred."; other = "error occurs" */
-int32_t write_registerd_impl(void* user_handle, uint8_t register_address, const uint8_t *buffer, uint16_t length)
-int32_t read_registerd_impl(void* user_handle, uint8_t register_address, uint8_t *buffer, uint16_t length)
+int32_t read_registerd_impl(void* user_handle, uint8_t address, uint8_t *buffer, uint16_t length)
+int32_t write_registerd_impl(void* user_handle, uint8_t address, const uint8_t *buffer, uint16_t length)
 
 /** Optional (Required by the self-test) */
 void delay_milliseconds_impl(uint32_t milliseconds)
@@ -34,8 +34,8 @@ void delay_milliseconds_impl(uint32_t milliseconds)
 
 ```c++
 qmc_context_t dev_ctx;
-dev_ctx.write_register_function = write_registerd_impl;
 dev_ctx.read_register_function = read_registerd_impl;
+dev_ctx.write_register_function = write_registerd_impl;
 dev_ctx.delay_milliseconds_function = delay_milliseconds_impl;
 
 ```
